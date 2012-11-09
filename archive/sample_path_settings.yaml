@@ -1,0 +1,47 @@
+basedir: /home2/data/Projects/Emotional-BS
+standard_brain: ${ENV.FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz
+standard_head:  ${ENV.FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz
+
+iterables:
+    subjects: subj
+    runs: run
+
+orig:
+    dir: $basedir/originals
+    subj:
+        dir: $subject
+        highres: highres/s${session}_r${run}/mprage.nii.gz
+        rest:    rest/s${session}_r${run}/func.nii.gz
+        task:    task/s${session}_r${run}/task.nii.gz
+
+freesurfer:
+    dir: $basedir/freesurfer
+    subj:
+        dir: $subject
+        orig:   mri/orig.mgz
+        T1:     mri/T1.mgz
+        brain:  mri/brainmask.mgz
+
+preproc:
+    dir: $basedir/preproc
+    subj:
+        dir: $subject
+        highres:
+            alias:
+                head: skullstrip.head
+            skullstrip:
+                # note: dir will automatically equal skullstrip
+                #       so to have no dir then do 'dir: '
+                head:  head.nii.gz
+                brain: brain.nii.gz
+                mask:  brain_mask.nii.gz
+            segmentation:
+                wm_prob:   wm_prob.nii.gz
+                csf_prob:  csf_prob.nii.gz
+                grey_prob: grey_prob.nii.gz
+                wm_mask:   wm_mask.nii.gz
+                csf_mask:  csf_mask.nii.gz
+                grey_mask: grey_mask.nii.gz
+            registration:
+                to_std:   highres2standard
+                from_std: standard2highres

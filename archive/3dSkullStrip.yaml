@@ -1,0 +1,348 @@
+---
+- :name: input
+  :desc: Input afni (or afni readable) volume.
+  :argstr: -input
+  :type: :string
+- :name: monkey
+  :desc: The brain of a monkey.
+  :argstr: -monkey
+- :name: marmoset
+  :desc: ! 'The brain of a marmoset.
+
+    this one was tested on one dataset
+
+    and may not work with non default
+
+    options. check your results!'
+  :argstr: -marmoset
+- :name: rat
+  :desc: ! 'The brain of a rat.
+
+    by default, no_touchup is used with the rat.'
+  :argstr: -rat
+- :name: surface_coil
+  :desc: Data acquired with a surface coil.
+  :argstr: -surface_coil
+- :name: o_TYPE
+  :desc: ! 'Prefix of output surface.
+
+    where type specifies the format of the surface
+
+    and prefix is, well, the prefix.
+
+    type is one of: fs, 1d (or vec), sf, ply.
+
+    more on that below.'
+  :argstr: -o_TYPE
+  :type: :string
+- :name: skulls
+  :desc: Output surface models of the skull.
+  :argstr: -skulls
+- :name: 4Tom
+  :desc: ! 'The output surfaces are named based
+
+    on prefix following -o_type option below.'
+  :argstr: -4Tom
+- :name: prefix
+  :desc: ! "Prefix of output volume.\nif not specified, the prefix is the same\nas
+    the one used with -o_type.\nthe output volume is skull stripped version\nof the
+    input volume. in the earlier version\nof the program, a mask volume was written
+    out.\nyou can still get that mask volume instead of the\nskull-stripped volume
+    with the option -mask_vol .\nnote: in the default setting, the output volume does
+    not\n      have values identical to those in the input.\n      in particular,
+    the range might be larger\n      and some low-intensity values are set to 0.\n
+    \     if you insist on having the same range of values as in\n      the input,
+    then either use option -orig_vol, or run:\n 3dcalc -nscale -a vol+view -b vol_prefix+view
+    \\\n        -expr 'a*step(b)' -prefix vol_same_range\n      with the command above,
+    you can preserve the range\n      of values of the input but some low-intensity
+    voxels would\n      still be masked. if you want to preserve them, then use\n
+    \     -mask_vol in the 3dskullstrip command that would produce\n      vol_mask_prefix+view.
+    then run 3dcalc masking with voxels\n      inside the brain surface envelope:\n
+    3dcalc -nscale -a vol+view -b vol_mask_prefix+view \\\n        -expr 'a*step(b-3.01)'
+    -prefix vol_same_range_keep_low"
+  :argstr: -prefix
+  :type: :string
+- :name: norm_vol
+  :desc: ! 'Output a masked and somewhat intensity normalized and
+
+    thresholded version of the input. this is the default,
+
+    and you can use -orig_vol to override it.'
+  :argstr: -norm_vol
+- :name: orig_vol
+  :desc: ! 'Output a masked version of the input and do not modify
+
+    the values inside the brain as -norm_vol would.'
+  :argstr: -orig_vol
+- :name: mask_vol
+  :desc: ! "Output a mask volume instead of a skull-stripped\nvolume.\nthe mask volume
+    containes:\n 0: voxel outside surface\n 1: voxel just outside the surface. this
+    means the voxel\n    center is outside the surface but inside the\n    bounding
+    box of a triangle in the mesh.\n 2: voxel intersects the surface (a triangle),
+    but center\n    lies outside.\n 3: voxel contains a surface node.\n 4: voxel intersects
+    the surface (a triangle), center lies\n    inside surface.\n 5: voxel just inside
+    the surface. this means the voxel\n    center is inside the surface and inside
+    the\n    bounding box of a triangle in the mesh.\n 6: voxel inside the surface."
+  :argstr: -mask_vol
+- :name: spat_norm
+  :desc: ! '(default) perform spatial normalization first.
+
+    this is a necessary step unless the volume has
+
+    been ''spatnormed'' already.'
+  :argstr: -spat_norm
+- :name: no_spatnorm
+  :desc: ! 'Do not perform spatial normalization.
+
+    use this option only when the volume
+
+    has been run through the ''spatnorm'' process'
+  :argstr: -no_spatnorm
+- :name: spatnorm_dxyz
+  :desc: ! 'Use dxy for the spatial resolution of the
+
+    spatially normalized volume. the default
+
+    is the lowest of all three dimensions.
+
+    for human brains, use dxyz of 1.0, for
+
+    primate brain, use the default setting.'
+  :argstr: -spatnorm_dxyz
+  :type: :string
+- :name: write_spatnorm
+  :desc: Write the 'spatnormed' volume to disk.
+  :argstr: -write_spatnorm
+- :name: niter
+  :desc: ! 'Number of iterations. default is 250
+
+    for denser meshes, you need more iterations
+
+    n_iter of 750 works for ld of 50.'
+  :argstr: -niter
+  :type: :string
+- :name: ld
+  :desc: ! 'Parameter to control the density of the surface.
+
+    default is 20 if -no_use_edge is used,
+
+    30 with -use_edge. see createicosahedron -help
+
+    for details on this option.'
+  :argstr: -ld
+  :type: :string
+- :name: shrink_fac
+  :desc: ! "Parameter controlling the brain vs non-brain\nintensity threshold (tb).
+    default is 0.6.\n tb = (imax - t2) sf + t2\nwhere t2 is the 2 percentile value
+    and imax is the local\nmaximum, limited to the median intensity value.\nfor more
+    information on tb, t2, etc. read the bet paper\nmentioned above. note that in
+    3dskullstrip, sf can vary across\niterations and might be automatically clipped
+    in certain areas.\nsf can vary between 0 and 1.\n0: intensities < median inensity
+    are considered non-brain\n1: intensities < t2 are considered non-brain"
+  :argstr: -shrink_fac
+  :type: :string
+- :name: var_shrink_fac
+  :desc: ! 'Vary the shrink factor with the number of
+
+    iterations. this reduces the likelihood of a surface
+
+    getting stuck on large pools of csf before reaching
+
+    the outer surface of the brain. (default)'
+  :argstr: -var_shrink_fac
+- :name: no_var_shrink_fac
+  :desc: Do not use var_shrink_fac.
+  :argstr: -no_var_shrink_fac
+- :name: shrink_fac_bot_lim
+  :desc: ! 'Do not allow the varying sf to go
+
+    below sfbl . default 0.65, 0.4 when edge detection is used.
+
+    this option helps reduce potential for leakage below
+
+    the cerebellum.
+
+    in certain cases where you have severe non-uniformity resulting
+
+    in low signal towards the bottom of the brain, you will need to
+
+    reduce this parameter.'
+  :argstr: -shrink_fac_bot_lim
+  :type: :string
+- :name: pushout
+  :desc: ! 'Consider values above each node in addition to values
+
+    below the node when deciding on expansion. (default)'
+  :argstr: -pushout
+- :name: no_pushout
+  :desc: Do not use -pushout.
+  :argstr: -no_pushout
+- :name: exp_frac
+  :desc: Speed of expansion (see bet paper). default is 0.1.
+  :argstr: -exp_frac
+  :type: :string
+- :name: touchup
+  :desc: ! 'Perform touchup operations at end to include
+
+    areas not covered by surface expansion.
+
+    use -touchup -touchup for aggressive makeup.
+
+    (default is -touchup)'
+  :argstr: -touchup
+- :name: no_touchup
+  :desc: Do not use -touchup
+  :argstr: -no_touchup
+- :name: fill_hole
+  :desc: ! 'Fill small holes that can result from small surface
+
+    intersections caused by the touchup operation.
+
+    r is the maximum number of pixels on the side of a hole
+
+    that can be filled. big holes are not filled.
+
+    if you use -touchup, the default r is 10. otherwise
+
+    the default is 0.
+
+    this is a less than elegant solution to the small
+
+    intersections which are usually eliminated
+
+    automatically.'
+  :argstr: -fill_hole
+  :type: :string
+- :name: NN_smooth
+  :desc: ! 'Perform nearest neighbor coordinate interpolation
+
+    every few iterations. default is 72'
+  :argstr: -NN_smooth
+  :type: :string
+- :name: smooth_final
+  :desc: ! 'Perform final surface smoothing after all iterations.
+
+    default is 20 smoothing iterations.
+
+    smoothing is done using taubin''s method,
+
+    see surfsmooth -help for detail.'
+  :argstr: -smooth_final
+  :type: :string
+- :name: avoid_vent
+  :desc: ! 'Avoid ventricles. default.
+
+    use this option twice to make the avoidance more
+
+    agressive. that is at times needed with old brains.'
+  :argstr: -avoid_vent
+- :name: no_avoid_vent
+  :desc: Do not use -avoid_vent.
+  :argstr: -no_avoid_vent
+- :name: init_radius
+  :desc: ! 'Use rad for the initial sphere radius.
+
+    for the automatic setting, there is an
+
+    upper limit of 100mm for humans.
+
+    for older brains with lots of csf, you
+
+    might benefit from forcing the radius
+
+    to something like 75mm'
+  :argstr: -init_radius
+  :type: :string
+- :name: avoid_eyes
+  :desc: Avoid eyes. default
+  :argstr: -avoid_eyes
+- :name: no_avoid_eyes
+  :desc: Do not use -avoid_eyes.
+  :argstr: -no_avoid_eyes
+- :name: use_edge
+  :desc: ! 'Use edge detection to reduce leakage into meninges and eyes.
+
+    default.'
+  :argstr: -use_edge
+- :name: no_use_edge
+  :desc: Do no use edges.
+  :argstr: -no_use_edge
+- :name: push_to_edge
+  :desc: ! 'Perform aggressive push to edge at the end.
+
+    this option might cause leakage.'
+  :argstr: -push_to_edge
+- :name: no_push_to_edge
+  :desc: (default).
+  :argstr: -no_push_to_edge
+- :name: use_skull
+  :desc: ! 'Use outer skull to limit expansion of surface into
+
+    the skull due to very strong shading artifacts.
+
+    this option is buggy at the moment, use it only
+
+    if you have leakage into skull.'
+  :argstr: -use_skull
+- :name: no_use_skull
+  :desc: Do not use -use_skull (default).
+  :argstr: -no_use_skull
+- :name: send_no_skull
+  :desc: ! 'Do not send the skull surface to suma if you are
+
+    using  -talk_suma'
+  :argstr: -send_no_skull
+- :name: perc_int
+  :desc: ! 'Percentage of segments allowed to intersect
+
+    surface. ideally this should be 0 (default).
+
+    however, few surfaces might have small stubborn
+
+    intersections that produce a few holes.
+
+    perc_int should be a small number, typically
+
+    between 0 and 0.1'
+  :argstr: -perc_int
+  :type: :string
+- :name: max_inter_iter
+  :desc: ! 'Number of iteration to remove intersection
+
+    problems. with each iteration, the program
+
+    automatically increases the amount of smoothing
+
+    to get rid of intersections. default is 4'
+  :argstr: -max_inter_iter
+  :type: :string
+- :name: blur_fwhm
+  :desc: ! 'Blur dset after spatial normalization.
+
+    recommended when you have lots of csf in brain
+
+    and when you have protruding gyri (finger like)
+
+    recommended value is 2..4.'
+  :argstr: -blur_fwhm
+  :type: :string
+- :name: interactive
+  :desc: ! 'Make the program stop at various stages in the
+
+    segmentation process for a prompt from the user
+
+    to continue or skip that stage of processing.
+
+    this option is best used in conjunction with options
+
+    -talk_suma and -feed_afni'
+  :argstr: -interactive
+- :name: demo_pause
+  :desc: ! 'Pause at various step in the process to facilitate
+
+    interactive demo while 3dskullstrip is communicating
+
+    with afni and suma. see ''eye candy'' mode below and
+
+    -talk_suma option.'
+  :argstr: -demo_pause

@@ -1,0 +1,36 @@
+:i:
+    :subjects:
+        :sub001:
+            :runs:
+                :1:
+                    :orig: :auto
+                :2:
+                    :orig: :auto
+:o:
+    :subjects:
+        :sub001:
+            :runs:
+                :1:
+                    :fixed_orig: :auto
+                    :test: :auto
+                :2:
+                    :fixed_orig: auto
+                    :test: :auto
+
+subjects:
+    sub001:
+        runs:
+            1:
+                orig: $orig.highres
+            2:
+                orig: $orig.highres
+        head: $preproc.head
+        brain: $preproc.skullstrip.brain
+        brain_mask: $preproc.skullstrip.mask
+    sub002:
+        head: $preproc.head
+        brain: $preproc.skullstrip.brain
+        brain_mask: $preproc.skullstrip.mask
+
+
+"subjects": 
